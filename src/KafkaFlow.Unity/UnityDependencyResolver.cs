@@ -1,6 +1,7 @@
 namespace KafkaFlow.Unity
 {
     using System;
+    using System.Collections.Generic;
     using global::Unity;
 
     /// <summary>
@@ -16,18 +17,14 @@ namespace KafkaFlow.Unity
         /// <param name="container">A Unity container instance</param>
         public UnityDependencyResolver(IUnityContainer container) => this.container = container;
 
-        /// <summary>
-        /// Creates a container scope
-        /// </summary>
-        /// <returns></returns>
+        /// <inheritdoc cref="IDependencyResolver.CreateScope"/>
         public IDependencyResolverScope CreateScope() =>
             new UnityDependencyResolverScope(this.container.CreateChildContainer());
 
-        /// <summary>
-        /// Gets an instances of the passed type
-        /// </summary>
-        /// <param name="type">The type to be created</param>
-        /// <returns></returns>
+        /// <inheritdoc cref="IDependencyResolver.Resolve"/>
         public object Resolve(Type type) => this.container.Resolve(type);
+
+        /// <inheritdoc cref="IDependencyResolver.ResolveAll"/>
+        public IEnumerable<object> ResolveAll(Type type) => this.container.ResolveAll(type);
     }
 }

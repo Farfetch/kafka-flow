@@ -18,7 +18,7 @@ namespace KafkaFlow.Configuration
             int workersCount,
             int bufferSize,
             Factory<IDistributionStrategy> distributionStrategyFactory,
-            MiddlewareConfiguration middlewareConfiguration,
+            IReadOnlyList<MiddlewareConfiguration> middlewaresConfigurations,
             bool autoStoreOffsets,
             TimeSpan autoCommitInterval,
             IReadOnlyList<Action<string>> statisticsHandlers,
@@ -35,7 +35,7 @@ namespace KafkaFlow.Configuration
 
             this.DistributionStrategyFactory =
                 distributionStrategyFactory ?? throw new ArgumentNullException(nameof(distributionStrategyFactory));
-            this.MiddlewareConfiguration = middlewareConfiguration ?? throw new ArgumentNullException(nameof(middlewareConfiguration));
+            this.MiddlewaresConfigurations = middlewaresConfigurations ?? throw new ArgumentNullException(nameof(middlewaresConfigurations));
             this.AutoStoreOffsets = autoStoreOffsets;
             this.AutoCommitInterval = autoCommitInterval;
             this.Topics = topics ?? throw new ArgumentNullException(nameof(topics));
@@ -58,7 +58,7 @@ namespace KafkaFlow.Configuration
 
         public Factory<IDistributionStrategy> DistributionStrategyFactory { get; }
 
-        public MiddlewareConfiguration MiddlewareConfiguration { get; }
+        public IReadOnlyList<MiddlewareConfiguration> MiddlewaresConfigurations { get; }
 
         public IEnumerable<string> Topics { get; }
 

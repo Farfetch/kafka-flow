@@ -1,56 +1,96 @@
 namespace KafkaFlow.Configuration
 {
+    using System;
     using System.Collections.Generic;
 
     internal class MiddlewareConfigurationBuilder<TBuilder>
         : IMiddlewareConfigurationBuilder<TBuilder>
         where TBuilder : class, IMiddlewareConfigurationBuilder<TBuilder>
     {
-        private readonly List<Factory<IMessageMiddleware>> middlewaresFactories = new();
+        private readonly List<MiddlewareConfiguration> middlewaresConfigurations = new();
 
-        public MiddlewareConfigurationBuilder(IDependencyConfigurator dependencyConfigurator)
+        protected MiddlewareConfigurationBuilder(IDependencyConfigurator dependencyConfigurator)
         {
             this.DependencyConfigurator = dependencyConfigurator;
         }
 
         public IDependencyConfigurator DependencyConfigurator { get; }
 
-        public TBuilder Add<T>(Factory<T> factory)
+        public TBuilder Add<T>(
+            Factory<T> factory,
+            MiddlewareLifetime lifetime = MiddlewareLifetime.ConsumerOrProducer)
             where T : class, IMessageMiddleware
         {
-            this.middlewaresFactories.Add(factory);
+            return this.AddAt(this.middlewaresConfigurations.Count, factory, lifetime);
+        }
+
+        public TBuilder AddAtBeginning<T>(
+            Factory<T> factory,
+            MiddlewareLifetime lifetime = MiddlewareLifetime.ConsumerOrProducer)
+            where T : class, IMessageMiddleware
+        {
+            return this.AddAt(0, factory, lifetime);
+        }
+
+        public TBuilder Add<T>(MiddlewareLifetime lifetime = MiddlewareLifetime.ConsumerOrProducer)
+            where T : class, IMessageMiddleware
+        {
+            return this.AddAt<T>(this.middlewaresConfigurations.Count, lifetime);
+        }
+
+        public TBuilder AddAtBeginning<T>(MiddlewareLifetime lifetime = MiddlewareLifetime.ConsumerOrProducer)
+            where T : class, IMessageMiddleware
+        {
+            return this.AddAt<T>(0, lifetime);
+        }
+
+        public IReadOnlyList<MiddlewareConfiguration> Build() => this.middlewaresConfigurations;
+
+        private static InstanceLifetime ParseLifetime(MiddlewareLifetime lifetime)
+        {
+            return lifetime switch
+            {
+                MiddlewareLifetime.Scoped => InstanceLifetime.Scoped,
+                MiddlewareLifetime.Singleton => InstanceLifetime.Singleton,
+                MiddlewareLifetime.Transient or
+                    MiddlewareLifetime.Worker or
+                    MiddlewareLifetime.ConsumerOrProducer => InstanceLifetime.Transient,
+                _ => throw new InvalidCastException()
+            };
+        }
+
+        private TBuilder AddAt<T>(
+            int position,
+            Factory<T> factory,
+            MiddlewareLifetime lifetime = MiddlewareLifetime.ConsumerOrProducer)
+            where T : class, IMessageMiddleware
+        {
+            var containerId = Guid.NewGuid();
+
+            this.DependencyConfigurator.Add(
+                typeof(MiddlewareInstanceContainer<T>),
+                _ => new MiddlewareInstanceContainer<T>(containerId, factory),
+                ParseLifetime(lifetime));
+
+            this.middlewaresConfigurations.Insert(
+                position,
+                new MiddlewareConfiguration(typeof(T), lifetime, containerId));
+
             return this as TBuilder;
         }
 
-        public TBuilder AddAtBeginning<T>(Factory<T> factory)
+        private TBuilder AddAt<T>(
+            int position,
+            MiddlewareLifetime lifetime = MiddlewareLifetime.ConsumerOrProducer)
             where T : class, IMessageMiddleware
         {
-            this.middlewaresFactories.Insert(0, factory);
+            this.DependencyConfigurator.Add<T>(ParseLifetime(lifetime));
+
+            this.middlewaresConfigurations.Insert(
+                position,
+                new MiddlewareConfiguration(typeof(T), lifetime));
+
             return this as TBuilder;
-        }
-
-        public TBuilder Add<T>()
-            where T : class, IMessageMiddleware
-        {
-            this.RegisterType<T>();
-            this.middlewaresFactories.Add(resolver => resolver.Resolve<T>());
-            return this as TBuilder;
-        }
-
-        public TBuilder AddAtBeginning<T>()
-            where T : class, IMessageMiddleware
-        {
-            this.RegisterType<T>();
-            this.middlewaresFactories.Insert(0, resolver => resolver.Resolve<T>());
-            return this as TBuilder;
-        }
-
-        public MiddlewareConfiguration Build() => new(this.middlewaresFactories);
-
-        private void RegisterType<T>()
-            where T : class, IMessageMiddleware
-        {
-            this.DependencyConfigurator.AddTransient<T>();
         }
     }
 }

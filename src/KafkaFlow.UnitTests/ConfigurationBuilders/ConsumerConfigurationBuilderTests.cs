@@ -66,7 +66,7 @@ namespace KafkaFlow.UnitTests.ConfigurationBuilders
             configuration.StatisticsHandlers.Should().BeEmpty();
             configuration.PartitionsAssignedHandlers.Should().BeEmpty();
             configuration.PartitionsRevokedHandlers.Should().BeEmpty();
-            configuration.MiddlewareConfiguration.Factories.Should().BeEmpty();
+            configuration.MiddlewaresConfigurations.Should().BeEmpty();
         }
 
         [TestMethod]
@@ -129,7 +129,7 @@ namespace KafkaFlow.UnitTests.ConfigurationBuilders
             configuration.PartitionsAssignedHandlers.Should().HaveElementAt(0, partitionsAssignedHandler);
             configuration.PartitionsRevokedHandlers.Should().HaveElementAt(0, partitionsRevokedHandler);
             configuration.GetKafkaConfig().Should().BeSameAs(consumerConfig);
-            configuration.MiddlewareConfiguration.Factories.Should().HaveCount(1);
+            configuration.MiddlewaresConfigurations.Should().HaveCount(1);
         }
     }
 }

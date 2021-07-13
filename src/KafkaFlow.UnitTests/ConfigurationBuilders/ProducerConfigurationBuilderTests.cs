@@ -52,7 +52,7 @@ namespace KafkaFlow.UnitTests.ConfigurationBuilders
             configuration.DefaultTopic.Should().BeNull();
             configuration.Acks.Should().BeNull();
             configuration.StatisticsHandlers.Should().BeEmpty();
-            configuration.MiddlewareConfiguration.Factories.Should().BeEmpty();
+            configuration.MiddlewaresConfigurations.Should().BeEmpty();
         }
 
         [TestMethod]
@@ -96,7 +96,7 @@ namespace KafkaFlow.UnitTests.ConfigurationBuilders
             configuration.BaseProducerConfig.StatisticsIntervalMs.Should().Be(statisticsIntervalMs);
             configuration.StatisticsHandlers.Should().HaveElementAt(0, statisticsHandler);
             configuration.BaseProducerConfig.Should().BeSameAs(producerConfig);
-            configuration.MiddlewareConfiguration.Factories.Should().HaveCount(1);
+            configuration.MiddlewaresConfigurations.Should().HaveCount(1);
         }
     }
 }

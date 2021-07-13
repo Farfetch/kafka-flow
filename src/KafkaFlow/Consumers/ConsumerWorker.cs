@@ -9,9 +9,10 @@ namespace KafkaFlow.Consumers
     internal class ConsumerWorker : IConsumerWorker
     {
         private readonly IConsumer consumer;
+        private readonly IDependencyResolver dependencyResolver;
         private readonly IOffsetManager offsetManager;
-        private readonly ILogHandler logHandler;
         private readonly IMiddlewareExecutor middlewareExecutor;
+        private readonly ILogHandler logHandler;
 
         private readonly Channel<ConsumeResult<byte[], byte[]>> messagesBuffer;
 
@@ -21,16 +22,18 @@ namespace KafkaFlow.Consumers
 
         public ConsumerWorker(
             IConsumer consumer,
+            IDependencyResolver dependencyResolver,
             int workerId,
             IOffsetManager offsetManager,
-            ILogHandler logHandler,
-            IMiddlewareExecutor middlewareExecutor)
+            IMiddlewareExecutor middlewareExecutor,
+            ILogHandler logHandler)
         {
             this.Id = workerId;
             this.consumer = consumer;
+            this.dependencyResolver = dependencyResolver;
             this.offsetManager = offsetManager;
-            this.logHandler = logHandler;
             this.middlewareExecutor = middlewareExecutor;
+            this.logHandler = logHandler;
             this.messagesBuffer = Channel.CreateBounded<ConsumeResult<byte[], byte[]>>(consumer.Configuration.BufferSize);
         }
 
@@ -71,8 +74,10 @@ namespace KafkaFlow.Consumers
 
                             try
                             {
+                                using var scope = this.dependencyResolver.CreateScope();
+
                                 await this.middlewareExecutor
-                                    .Execute(context, _ => Task.CompletedTask)
+                                    .Execute(scope.Resolver, context, _ => Task.CompletedTask)
                                     .ConfigureAwait(false);
                             }
                             catch (Exception ex)

@@ -10,17 +10,13 @@ namespace KafkaFlow
         {
             var logHandler = resolver.Resolve<ILogHandler>();
 
-            var middlewares = configuration.MiddlewareConfiguration.Factories
-                .Select(factory => factory(resolver))
-                .ToList();
-
             var consumer = configuration.CustomFactory(new Consumer(configuration, resolver, logHandler), resolver);
 
             var consumerWorkerPool = new ConsumerWorkerPool(
                 consumer,
                 resolver,
+                new MiddlewareExecutor(configuration.MiddlewaresConfigurations),
                 logHandler,
-                new MiddlewareExecutor(middlewares),
                 configuration.DistributionStrategyFactory);
 
             var feeder = new WorkerPoolFeeder(

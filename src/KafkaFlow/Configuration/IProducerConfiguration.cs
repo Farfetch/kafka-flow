@@ -36,9 +36,9 @@ namespace KafkaFlow.Configuration
         Acks? Acks { get; }
 
         /// <summary>
-        /// Gets the middleware configuration
+        /// Gets the middlewares configurations
         /// </summary>
-        MiddlewareConfiguration MiddlewareConfiguration { get; }
+        IReadOnlyList<MiddlewareConfiguration> MiddlewaresConfigurations { get; }
 
         /// <summary>
         /// Gets the statistics handlers

@@ -10,8 +10,8 @@ namespace KafkaFlow.Consumers
     {
         private readonly IConsumer consumer;
         private readonly IDependencyResolver dependencyResolver;
-        private readonly ILogHandler logHandler;
         private readonly IMiddlewareExecutor middlewareExecutor;
+        private readonly ILogHandler logHandler;
         private readonly Factory<IDistributionStrategy> distributionStrategyFactory;
 
         private List<IConsumerWorker> workers = new();
@@ -22,14 +22,14 @@ namespace KafkaFlow.Consumers
         public ConsumerWorkerPool(
             IConsumer consumer,
             IDependencyResolver dependencyResolver,
-            ILogHandler logHandler,
             IMiddlewareExecutor middlewareExecutor,
+            ILogHandler logHandler,
             Factory<IDistributionStrategy> distributionStrategyFactory)
         {
             this.consumer = consumer;
             this.dependencyResolver = dependencyResolver;
-            this.logHandler = logHandler;
             this.middlewareExecutor = middlewareExecutor;
+            this.logHandler = logHandler;
             this.distributionStrategyFactory = distributionStrategyFactory;
         }
 
@@ -49,10 +49,11 @@ namespace KafkaFlow.Consumers
                             {
                                 var worker = new ConsumerWorker(
                                     this.consumer,
+                                    this.dependencyResolver,
                                     workerId,
                                     this.offsetManager,
-                                    this.logHandler,
-                                    this.middlewareExecutor);
+                                    this.middlewareExecutor,
+                                    this.logHandler);
 
                                 this.workers.Add(worker);
 

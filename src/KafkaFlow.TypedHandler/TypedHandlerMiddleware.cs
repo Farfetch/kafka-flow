@@ -18,22 +18,19 @@ namespace KafkaFlow.TypedHandler
 
         public async Task Invoke(IMessageContext context, MiddlewareDelegate next)
         {
-            using (var scope = this.dependencyResolver.CreateScope())
-            {
-                await Task.WhenAll(
-                        this.configuration
-                            .HandlerMapping
-                            .GetHandlersTypes(context.Message.Value.GetType())
-                            .Select(
-                                handler =>
-                                    HandlerExecutor
-                                        .GetExecutor(context.Message.Value.GetType())
-                                        .Execute(
-                                            scope.Resolver.Resolve(handler),
-                                            context,
-                                            context.Message.Value)))
-                    .ConfigureAwait(false);
-            }
+            await Task.WhenAll(
+                    this.configuration
+                        .HandlerMapping
+                        .GetHandlersTypes(context.Message.Value.GetType())
+                        .Select(
+                            handler =>
+                                HandlerExecutor
+                                    .GetExecutor(context.Message.Value.GetType())
+                                    .Execute(
+                                        this.dependencyResolver.Resolve(handler),
+                                        context,
+                                        context.Message.Value)))
+                .ConfigureAwait(false);
 
             await next(context).ConfigureAwait(false);
         }

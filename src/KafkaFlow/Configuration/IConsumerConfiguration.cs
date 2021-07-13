@@ -15,9 +15,9 @@ namespace KafkaFlow.Configuration
         Factory<IDistributionStrategy> DistributionStrategyFactory { get; }
 
         /// <summary>
-        /// Gets the consumer middleware configuration
+        /// Gets the consumer middlewares configurations
         /// </summary>
-        MiddlewareConfiguration MiddlewareConfiguration { get; }
+        IReadOnlyList<MiddlewareConfiguration> MiddlewaresConfigurations { get; }
 
         /// <summary>
         /// Gets the consumer configured topics

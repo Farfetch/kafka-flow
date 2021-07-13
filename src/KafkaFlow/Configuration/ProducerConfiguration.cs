@@ -12,7 +12,7 @@ namespace KafkaFlow.Configuration
             string name,
             string defaultTopic,
             Acks? acks,
-            MiddlewareConfiguration middlewareConfiguration,
+            IReadOnlyList<MiddlewareConfiguration> middlewaresConfigurations,
             ProducerConfig baseProducerConfig,
             IReadOnlyList<Action<string>> statisticsHandlers,
             ProducerCustomFactory customFactory)
@@ -21,7 +21,8 @@ namespace KafkaFlow.Configuration
             this.Name = name;
             this.DefaultTopic = defaultTopic;
             this.Acks = acks;
-            this.MiddlewareConfiguration = middlewareConfiguration;
+            this.MiddlewaresConfigurations =
+                middlewaresConfigurations ?? throw new ArgumentNullException(nameof(middlewaresConfigurations));
             this.BaseProducerConfig = baseProducerConfig;
             this.StatisticsHandlers = statisticsHandlers;
             this.CustomFactory = customFactory;
@@ -37,7 +38,7 @@ namespace KafkaFlow.Configuration
 
         public Acks? Acks { get; }
 
-        public MiddlewareConfiguration MiddlewareConfiguration { get; }
+        public IReadOnlyList<MiddlewareConfiguration> MiddlewaresConfigurations { get; }
 
         public IReadOnlyList<Action<string>> StatisticsHandlers { get; }
 

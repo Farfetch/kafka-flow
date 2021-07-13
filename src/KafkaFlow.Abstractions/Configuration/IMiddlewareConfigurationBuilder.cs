@@ -16,9 +16,12 @@ namespace KafkaFlow.Configuration
         /// Registers a middleware
         /// </summary>
         /// <param name="factory">A factory to create the instance</param>
+        /// <param name="lifetime">The middleware instance lifetime</param>
         /// <typeparam name="T">A class that implements the <see cref="IMessageMiddleware"/></typeparam>
         /// <returns></returns>
-        TBuilder Add<T>(Factory<T> factory)
+        TBuilder Add<T>(
+            Factory<T> factory,
+            MiddlewareLifetime lifetime = MiddlewareLifetime.ConsumerOrProducer)
             where T : class, IMessageMiddleware;
 
         /// <summary>
@@ -26,26 +29,31 @@ namespace KafkaFlow.Configuration
         /// The middleware will run before other middlewares that already have been registered
         /// </summary>
         /// <param name="factory">A factory to create the instance</param>
+        /// <param name="lifetime">The middleware instance lifetime</param>
         /// <typeparam name="T">A class that implements the <see cref="IMessageMiddleware"/></typeparam>
         /// <returns></returns>
-        TBuilder AddAtBeginning<T>(Factory<T> factory)
+        TBuilder AddAtBeginning<T>(
+            Factory<T> factory,
+            MiddlewareLifetime lifetime = MiddlewareLifetime.ConsumerOrProducer)
             where T : class, IMessageMiddleware;
 
         /// <summary>
         /// Registers a middleware
         /// </summary>
+        /// <param name="lifetime">The middleware instance lifetime</param>
         /// <typeparam name="T">A class that implements the <see cref="IMessageMiddleware"/></typeparam>
         /// <returns></returns>
-        TBuilder Add<T>()
+        TBuilder Add<T>(MiddlewareLifetime lifetime = MiddlewareLifetime.ConsumerOrProducer)
             where T : class, IMessageMiddleware;
 
         /// <summary>
         /// Registers a middleware at the beginning of the middleware list
         /// The middleware will run before other middlewares that already have been registered
         /// </summary>
+        /// <param name="lifetime">The middleware instance lifetime</param>
         /// <typeparam name="T">A class that implements the <see cref="IMessageMiddleware"/></typeparam>
         /// <returns></returns>
-        TBuilder AddAtBeginning<T>()
+        TBuilder AddAtBeginning<T>(MiddlewareLifetime lifetime = MiddlewareLifetime.ConsumerOrProducer)
             where T : class, IMessageMiddleware;
     }
 }
