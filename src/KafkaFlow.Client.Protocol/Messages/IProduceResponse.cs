@@ -1,7 +1,5 @@
 namespace KafkaFlow.Client.Protocol.Messages
 {
-    using KafkaFlow.Client.Protocol;
-
     public interface IProduceResponse : IResponse
     {
         ITopic[] Topics { get; }

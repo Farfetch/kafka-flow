@@ -1,7 +1,6 @@
 namespace KafkaFlow.Client.Protocol.Messages.Implementations.Fetch
 {
     using System;
-    using System.IO;
     using KafkaFlow.Client.Protocol.Streams;
 
     public class FetchV11Request : IRequestMessage<FetchV11Response>

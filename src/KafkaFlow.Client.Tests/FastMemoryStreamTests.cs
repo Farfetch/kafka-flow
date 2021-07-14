@@ -131,32 +131,32 @@ namespace KafkaFlow.Client.Tests
             // this.target.Should().BeEquivalentTo(buffer.)
         }
 
-        [TestMethod]
-        [DataRow(0)]
-        [DataRow(16)]
-        [DataRow(SegmentSize)]
-        [DataRow(98)]
-        [DataRow(SegmentSize * 3)]
-        [DataRow(478)]
-        [DataRow(1024 * 5)]
-        public void Read_EqualToBuffer(int bufferSize)
-        {
-            // Arrange
-            var expectedBuffer = this.fixture
-                .CreateMany<byte>(bufferSize)
-                .ToArray();
-
-            var resultBuffer = new byte[bufferSize];
-
-            this.target.Write(expectedBuffer, 0, expectedBuffer.Length);
-            this.target.Position = 0;
-
-            // Act
-            this.target.Read(resultBuffer);
-
-            // Assert
-            resultBuffer.Should().BeEquivalentTo(expectedBuffer);
-        }
+        // [TestMethod]
+        // [DataRow(0)]
+        // [DataRow(16)]
+        // [DataRow(SegmentSize)]
+        // [DataRow(98)]
+        // [DataRow(SegmentSize * 3)]
+        // [DataRow(478)]
+        // [DataRow(1024 * 5)]
+        // public void Read_EqualToBuffer(int bufferSize)
+        // {
+        //     // Arrange
+        //     var expectedBuffer = this.fixture
+        //         .CreateMany<byte>(bufferSize)
+        //         .ToArray();
+        //
+        //     var resultBuffer = new byte[bufferSize];
+        //
+        //     this.target.Write(expectedBuffer, 0, expectedBuffer.Length);
+        //     this.target.Position = 0;
+        //
+        //     // Act
+        //     this.target.Read(resultBuffer);
+        //
+        //     // Assert
+        //     resultBuffer.Should().BeEquivalentTo(expectedBuffer);
+        // }
 
         [TestMethod]
         [DataRow(0)]

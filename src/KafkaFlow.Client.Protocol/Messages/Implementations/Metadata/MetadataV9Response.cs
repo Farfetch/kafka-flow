@@ -1,7 +1,6 @@
 namespace KafkaFlow.Client.Protocol.Messages.Implementations.Metadata
 {
     using System;
-    using System.IO;
     using KafkaFlow.Client.Protocol.Streams;
 
     internal class MetadataV9Response : IMetadataResponse, ITaggedFields

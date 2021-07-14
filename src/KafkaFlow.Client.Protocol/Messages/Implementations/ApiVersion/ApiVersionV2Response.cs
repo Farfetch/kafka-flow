@@ -1,6 +1,5 @@
 namespace KafkaFlow.Client.Protocol.Messages.Implementations.ApiVersion
 {
-    using System.IO;
     using KafkaFlow.Client.Protocol.Streams;
 
     public class ApiVersionV2Response : IApiVersionResponse

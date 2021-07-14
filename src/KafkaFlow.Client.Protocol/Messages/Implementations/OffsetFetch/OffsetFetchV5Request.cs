@@ -1,7 +1,6 @@
 namespace KafkaFlow.Client.Protocol.Messages.Implementations.OffsetFetch
 {
     using System;
-    using System.IO;
     using KafkaFlow.Client.Protocol.Streams;
 
     public class OffsetFetchV5Request : IRequestMessage<OffsetFetchV5Response>

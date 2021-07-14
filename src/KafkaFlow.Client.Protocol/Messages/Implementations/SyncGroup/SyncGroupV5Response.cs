@@ -1,6 +1,5 @@
 namespace KafkaFlow.Client.Protocol.Messages.Implementations.SyncGroup
 {
-    using System.IO;
     using KafkaFlow.Client.Protocol.Streams;
 
     public class SyncGroupV5Response : IResponse, ITaggedFields

@@ -30,7 +30,7 @@ namespace KafkaFlow.Client.Protocol.Streams
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteInt64(this Stream destination, long value)
+        public static void WriteInt64(this DynamicMemoryStream destination, long value)
         {
             Span<byte> tmp = stackalloc byte[8];
             BinaryPrimitives.WriteInt64BigEndian(tmp, value);

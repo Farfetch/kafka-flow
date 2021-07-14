@@ -2,7 +2,6 @@ namespace KafkaFlow.Client.Protocol.Messages.Implementations.Produce
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.Linq;
     using KafkaFlow.Client.Protocol.Streams;
 

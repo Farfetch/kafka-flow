@@ -1,6 +1,5 @@
 namespace KafkaFlow.Client.Protocol.Messages.Implementations.OffsetCommit
 {
-    using System.IO;
     using KafkaFlow.Client.Protocol.Streams;
 
     internal class OffsetCommitV2Response : IResponse, IOffsetCommitResponse

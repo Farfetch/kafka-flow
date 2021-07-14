@@ -1,6 +1,5 @@
 namespace KafkaFlow.Client.Protocol.Messages.Implementations.FindCoordinator
 {
-    using System.IO;
     using KafkaFlow.Client.Protocol.Streams;
 
     public class FindCoordinatorV3Response : IResponse, ITaggedFields, IFindCoordinatorResponse

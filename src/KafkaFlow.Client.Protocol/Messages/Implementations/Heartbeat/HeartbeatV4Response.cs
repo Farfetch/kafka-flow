@@ -1,6 +1,5 @@
 namespace KafkaFlow.Client.Protocol.Messages.Implementations.Heartbeat
 {
-    using System.IO;
     using KafkaFlow.Client.Protocol.Streams;
 
     public class HeartbeatV4Response : IResponse, ITaggedFields, IHeartbeatResponse

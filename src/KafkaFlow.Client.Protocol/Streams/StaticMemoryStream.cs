@@ -1,7 +1,6 @@
 namespace KafkaFlow.Client.Protocol.Streams
 {
     using System;
-    using System.Buffers.Binary;
     using System.IO;
     using System.Runtime.CompilerServices;
 
@@ -9,7 +8,7 @@ namespace KafkaFlow.Client.Protocol.Streams
     {
         private readonly IntPtr buffer;
         private readonly IMemoryManager memoryManager;
-        private long position;
+        private int position;
 
         public StaticMemoryStream(IMemoryManager memoryManager, int length)
         {
@@ -19,11 +18,11 @@ namespace KafkaFlow.Client.Protocol.Streams
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override unsafe int Read(Span<byte> buffer)
+        public unsafe int Read(Span<byte> buffer)
         {
-            var writeCount = (int) Math.Min(this.length - this.position, buffer.Length);
+            var writeCount = Math.Min(this.length - this.position, buffer.Length);
 
-            new Span<byte>((this.buffer + (int) this.position).ToPointer(), writeCount)
+            new Span<byte>((this.buffer + this.position).ToPointer(), writeCount)
                 .CopyTo(buffer);
 
             this.position += writeCount;
@@ -36,45 +35,23 @@ namespace KafkaFlow.Client.Protocol.Streams
         {
             stream.Read(
                 new Span<byte>(
-                    (this.buffer + (int) this.position).ToPointer(),
-                    (int) (this.length - this.position)));
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe int ReadInt32Native()
-        {
-            this.position += sizeof(int);
-            return BinaryPrimitives.ReadInt32BigEndian(
-                new Span<byte>(
-                    (void*) (this.buffer + (int) this.position - sizeof(int)),
-                    sizeof(int)));
+                    (this.buffer + this.position).ToPointer(),
+                    this.length - this.position));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override unsafe Span<byte> GetSpan(int size)
         {
-            var start = (int) this.position;
+            var start = this.position;
             this.Position += size;
             return new Span<byte>((this.buffer + start).ToPointer(), size);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public override unsafe void Write(ReadOnlySpan<byte> buffer)
-        {
-            var writeCount = (int) Math.Min(this.length - this.position, buffer.Length);
+        public override void Dispose() => this.memoryManager.Free(this.buffer);
 
-            buffer.CopyTo(new Span<byte>((this.buffer + (int) this.position).ToPointer(), writeCount));
+        public override unsafe byte this[int index] => *(byte*) (this.buffer + this.position);
 
-            this.position += writeCount;
-        }
-
-        public override void SetLength(long value) => throw new NotSupportedException();
-
-        protected override void Dispose(bool disposing) => this.memoryManager.Free(this.buffer);
-
-        public override unsafe byte this[int index] => *(byte*) (this.buffer + (int) this.position);
-
-        public override long Position
+        public override int Position
         {
             get => this.position;
             set

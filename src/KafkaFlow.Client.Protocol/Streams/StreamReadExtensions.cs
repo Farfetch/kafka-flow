@@ -9,6 +9,9 @@ namespace KafkaFlow.Client.Protocol.Streams
     public static class StreamReadExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static byte ReadByte(this BaseMemoryStream source) => source.GetSpan(1)[0];
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool ReadBoolean(this BaseMemoryStream source) => source.ReadByte() != 0;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

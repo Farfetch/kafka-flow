@@ -1,6 +1,5 @@
 namespace KafkaFlow.Client.Protocol.Messages.Implementations.LeaveGroup
 {
-    using System.IO;
     using KafkaFlow.Client.Protocol.Streams;
 
     public class LeaveGroupV4Response : ITaggedFields, ILeaveGroupResponse

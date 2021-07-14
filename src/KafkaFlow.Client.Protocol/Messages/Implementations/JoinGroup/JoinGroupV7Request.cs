@@ -1,7 +1,6 @@
 namespace KafkaFlow.Client.Protocol.Messages.Implementations.JoinGroup
 {
     using System;
-    using System.IO;
     using KafkaFlow.Client.Protocol.Streams;
 
     internal class JoinGroupV7Request : ITaggedFields, IJoinGroupRequest

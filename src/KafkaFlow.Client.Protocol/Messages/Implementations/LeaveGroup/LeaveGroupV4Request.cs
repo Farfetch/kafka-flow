@@ -2,7 +2,6 @@ namespace KafkaFlow.Client.Protocol.Messages.Implementations.LeaveGroup
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using KafkaFlow.Client.Protocol.Streams;
 
     internal class LeaveGroupV4Request : ITaggedFields, ILeaveGroupRequest

@@ -1,6 +1,5 @@
 namespace KafkaFlow.Client.Protocol.Messages.Implementations.Produce
 {
-    using System.IO;
     using KafkaFlow.Client.Protocol.Streams;
 
     public class ProduceV8Response : IProduceResponse

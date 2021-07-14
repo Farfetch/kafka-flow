@@ -56,12 +56,10 @@ namespace KafkaFlow.Client.Protocol
                         continue;
                     }
 
-                    await using var memory = new StaticMemoryStream(MemoryManager.Instance, messageSize);
-                    memory.ReadFrom(this.stream);
-                    memory.Position = 0;
-
-                    await using var tracked = new TrackedStream(memory, messageSize);
-                    this.RespondMessage(tracked);
+                    using var memoryStream = new StaticMemoryStream(MemoryManager.Instance, messageSize);
+                    memoryStream.ReadFrom(this.stream);
+                    memoryStream.Position = 0;
+                    this.RespondMessage(memoryStream);
                 }
                 catch (OperationCanceledException)
                 {
@@ -71,18 +69,17 @@ namespace KafkaFlow.Client.Protocol
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void RespondMessage(TrackedStream source)
+        private void RespondMessage(StaticMemoryStream source)
         {
             var correlationId = source.ReadInt32();
 
             if (!this.pendingRequests.TryGetValue(correlationId, out var request))
             {
                 Debug.WriteLine($"Received Invalid message CID: {correlationId}");
-                source.DiscardRemainingData();
                 return;
             }
 
-            Debug.WriteLine($"Received CID: {correlationId}, Type {request.ResponseType.Name} with {source.Size:N0}b");
+            Debug.WriteLine($"Received CID: {correlationId}, Type {request.ResponseType.Name} with {source.Length:N0}b");
 
             this.pendingRequests.Remove(correlationId);
 
@@ -93,7 +90,7 @@ namespace KafkaFlow.Client.Protocol
 
             response.Read(source);
 
-            if (source.Size != source.Position)
+            if (source.Length != source.Position)
             {
                 throw new Exception("Some data was not read from response");
             }

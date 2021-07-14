@@ -2,24 +2,23 @@ namespace KafkaFlow.Client.Protocol.Messages
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using KafkaFlow.Client.Protocol.Streams;
 
     public class RecordBatch : IRequest, IResponse
     {
         private readonly LinkedList<Record> records = new();
 
-        public long BaseOffset { get; private set; } = 0;
+        public long BaseOffset { get; private set; }
 
         public int BatchLength { get; private set; }
 
-        public int PartitionLeaderEpoch { get; private set; } = 0;
+        public int PartitionLeaderEpoch { get; private set; }
 
         public byte Magic { get; private set; } = 2;
 
         public int Crc { get; private set; }
 
-        public short Attributes { get; private set; } = 0;
+        public short Attributes { get; private set; }
 
         public int LastOffsetDelta { get; private set; }
 
@@ -81,7 +80,7 @@ namespace KafkaFlow.Client.Protocol.Messages
             var endPosition = destination.Position;
 
             // Write total length
-            var totalLength = (int) (endPosition - lengthStartPosition - 4);
+            var totalLength = endPosition - lengthStartPosition - 4;
             destination.Position = lengthStartPosition;
             destination.WriteInt32(totalLength);
 
@@ -90,7 +89,7 @@ namespace KafkaFlow.Client.Protocol.Messages
             destination.WriteInt32(this.BatchLength = totalLength - 8 - 4);
 
             // Write CRC
-            var crc = Crc32CHash.Compute(destination, (int) crcPosition, (int) (endPosition - crcPosition));
+            var crc = Crc32CHash.Compute(destination, crcPosition, endPosition - crcPosition);
             destination.Position = crcPosition - 4;
             destination.WriteInt32((int) crc);
 
@@ -104,35 +103,32 @@ namespace KafkaFlow.Client.Protocol.Messages
             if (size == 0)
                 return;
 
-            using var tracked = new TrackedStream(source, size);
-            this.BaseOffset = tracked.ReadInt64();
-            this.BatchLength = tracked.ReadInt32();
-            this.PartitionLeaderEpoch = tracked.ReadInt32();
-            this.Magic = (byte) tracked.ReadByte();
-            this.Crc = tracked.ReadInt32();
-            this.Attributes = tracked.ReadInt16();
-            this.LastOffsetDelta = tracked.ReadInt32();
-            this.FirstTimestamp = tracked.ReadInt64();
-            this.MaxTimestamp = tracked.ReadInt64();
-            this.ProducerId = tracked.ReadInt64();
-            this.ProducerEpoch = tracked.ReadInt16();
-            this.BaseSequence = tracked.ReadInt32();
+            this.BaseOffset = source.ReadInt64();
+            this.BatchLength = source.ReadInt32();
+            this.PartitionLeaderEpoch = source.ReadInt32();
+            this.Magic = source.ReadByte();
+            this.Crc = source.ReadInt32();
+            this.Attributes = source.ReadInt16();
+            this.LastOffsetDelta = source.ReadInt32();
+            this.FirstTimestamp = source.ReadInt64();
+            this.MaxTimestamp = source.ReadInt64();
+            this.ProducerId = source.ReadInt64();
+            this.ProducerEpoch = source.ReadInt16();
+            this.BaseSequence = source.ReadInt32();
 
-            var totalRecords = tracked.ReadInt32();
+            var totalRecords = source.ReadInt32();
 
             for (var i = 0; i < totalRecords; i++)
             {
-                this.records.AddLast(tracked.ReadMessage<Record>());
+                this.records.AddLast(source.ReadMessage<Record>());
             }
-
-            tracked.DiscardRemainingData();
         }
 
         public class Record : IRequest, IResponse
         {
             public int Length { get; private set; }
 
-            public byte Attributes { get; private set; } = 0;
+            public byte Attributes { get; private set; }
 
             public int TimestampDelta { get; internal set; }
 

@@ -1,7 +1,5 @@
 namespace KafkaFlow.Client.Protocol.Messages
 {
-    using KafkaFlow.Client.Protocol;
-
     public readonly struct ApiVersionRange
     {
         public ApiKey Api { get; }

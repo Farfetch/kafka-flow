@@ -2,7 +2,6 @@ namespace KafkaFlow.Client.Protocol.Messages
 {
     using System.Collections.Generic;
     using System.Linq;
-    using KafkaFlow.Client.Protocol;
 
     public class BrokerCapabilities : IBrokerCapabilities
     {

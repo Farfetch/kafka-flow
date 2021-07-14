@@ -1,7 +1,6 @@
 namespace KafkaFlow.Client.Protocol.Messages
 {
     using System;
-    using System.IO;
     using KafkaFlow.Client.Protocol.Streams;
 
     public class TaggedField : IRequest, IResponse

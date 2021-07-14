@@ -2,7 +2,6 @@ namespace KafkaFlow.Client.Protocol.Messages.Implementations.OffsetCommit
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using KafkaFlow.Client.Protocol.Streams;
 
     public class OffsetCommitV2Request : IOffsetCommitRequest
